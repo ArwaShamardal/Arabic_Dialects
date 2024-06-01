@@ -1,6 +1,7 @@
 import pandas as pd
 
 from scripts.data_fetching import DBHandler
+from scripts.data_preprocessing import Preprocess
 
 # database_path = './data/dialects_database.db'
 # db_handler = DBHandler(database_path)
@@ -15,3 +16,10 @@ from scripts.data_fetching import DBHandler
 # print(df.shape)
 # df.head()
 # df.to_csv('./data/dialects_data.csv', index=False)
+
+
+df = pd.read_csv('./data/dialects_data.csv')
+df_copy = df.copy()
+df_preprocessed = Preprocess(df_copy)
+df_preprocessed = df_preprocessed.preprocess()
+df_preprocessed.head()
