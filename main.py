@@ -4,6 +4,12 @@ from sklearn.model_selection import train_test_split
 
 from scripts.data_fetching import DBHandler
 from scripts.data_preprocessing import Preprocess
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+
+from sklearn.linear_model import LogisticRegression
+
+from scripts.ml_model import MLModel
 
 
 # NOTE:: the commented out part should only run once
@@ -30,3 +36,23 @@ df_preprocessed.head()
 
 X_train, X_test, y_train, y_test = train_test_split(
     df_preprocessed['text'], df_preprocessed['dialect'], test_size=0.2, random_state=42)
+
+############################################
+
+count_vect = CountVectorizer()
+model = LogisticRegression()
+
+my_model = MLModel(model, count_vect)
+my_model.train(X_train, y_train)
+predictions = my_model.predict(X_test)
+my_model.evaluate(y_test, predictions)
+
+my_model.save_model('./models/logistic_regression_model.pkl')
+
+
+model = MLModel.load_model('./models/logistic_regression_model.pkl')
+predictions = model.predict(X_test)
+model.evaluate(y_test, predictions)
+
+
+############################################
