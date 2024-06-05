@@ -4,7 +4,7 @@ from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Embedding, LSTM, Dense, SpatialDropout1D, Dropout
+from keras.layers import Embedding, LSTM, Dense, SpatialDropout1D, Dropout, SimpleRNN
 from keras.preprocessing.text import Tokenizer
 from keras_preprocessing.sequence import pad_sequences
 from keras.optimizers import Adam
@@ -12,27 +12,32 @@ from keras.utils import to_categorical
 
 class NLPModel:
     def __init__(self, model=None, tokenizer=None, label_encoder=None, max_sequence_length=27, 
-                 vocab_size=20000, embedding_dim=100):
+                 embedding_dim=100):
         
         self.model = model if model is not None else None
-        self.tokenizer = tokenizer if tokenizer is not None else Tokenizer(num_words=vocab_size)
+        self.tokenizer = tokenizer if tokenizer is not None else Tokenizer()
         self.label_encoder = label_encoder if label_encoder is not None else LabelEncoder()
         self.max_sequence_length = max_sequence_length
-        self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
+        
 
-    def build_model(self, num_classes=5):
+    def build_model(self, X_train, num_classes=5, learning_rate=0.001):
+        self.tokenizer.fit_on_texts(X_train)
+        vocab_size = len(self.tokenizer.word_index) + 1
+        
         model = Sequential()
-        model.add(Embedding(input_dim=self.vocab_size, output_dim=self.embedding_dim, 
+        model.add(Embedding(input_dim=vocab_size, output_dim=self.embedding_dim, 
                             input_length=self.max_sequence_length))
-        #model.add(SpatialDropout1D(0.2))
-        model.add(LSTM(100, dropout=0.2, return_sequences=True))  
-        model.add(LSTM(100, dropout=0.2))  
-        model.add(Dense(128, activation='relu'))  
-        model.add(Dropout(0.5))  
+        
+        model.add(SimpleRNN(100, return_sequences=False))  
+        #model.add(SimpleRNN(100))
+        model.add(Dense(128, activation='relu'))
+        model.add(Dropout(0.5))
         model.add(Dense(64, activation='relu'))
+        model.add(Dropout(0.5))
         model.add(Dense(num_classes, activation='softmax'))
-        model.compile(loss='categorical_crossentropy', optimizer=Adam(), 
+
+        model.compile(loss='categorical_crossentropy', optimizer=Adam(learning_rate=learning_rate), 
                       metrics=['accuracy'])  #, loss_weights=
         self.model = model
 
@@ -42,7 +47,8 @@ class NLPModel:
         y_train_enc = self.label_encoder.fit_transform(y_train)
         y_train_cat = to_categorical(y_train_enc)
         
-        self.model.fit(X_train_pad, y_train_cat, epochs=epochs, batch_size=batch_size, validation_data=validation_data, class_weight=class_weights)
+        self.model.fit(X_train_pad, y_train_cat, epochs=epochs, batch_size=batch_size, 
+                       validation_data=validation_data, class_weight=class_weights)
 
     def predict(self, X_test):
         X_test_seq = self.tokenizer.texts_to_sequences(X_test)

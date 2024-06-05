@@ -58,15 +58,15 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 ############################################
 
-nlp_model = NLPModel()
+nlp_model = NLPModel()      #embedding_dim=32, max_sequence_length=40
 
-nlp_model.build_model(num_classes=5)
+nlp_model.build_model(num_classes=5, X_train=X_train)
 
 class_weights = {0: 0.5126136442501215, 1: 1.0698120722743238, 
                  2: 0.8094742321707444, 3: 2.5604471791316405, 4: 2.046903145351254} 
 
 nlp_model.train(X_train, y_train, class_weights=class_weights, 
-                epochs=5, batch_size=128)
+                epochs=10, batch_size=1024)
 
 y_pred = nlp_model.predict(X_test)
 
