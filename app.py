@@ -36,27 +36,26 @@ dialects = {
 app = Flask(__name__)
 
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/", methods=['GET'])
 def home():
     f_model_names = list(models_dict.keys())
-    if request.method == 'POST':
-        f_text = request.form['text']
-        if f_text == "":
-            return render_template("home.html", model_names=f_model_names, result="")
-        f_text = Preprocess(f_text).preprocess()
-        print(f_text)
-        f_text = f_text['text'][0]
-        print(f_text)
-
-        f_model_name = request.form['model']
-        model = models_dict[f_model_name]
-        prediction = model.predict([f_text])
-        f_result = dialects[prediction[0]]
-        # update only the result in the page
-        return render_template("home.html", model_names=f_model_names, result=f_result, text=f_text, model=f_model_name)
-
     return render_template("home.html", model_names=f_model_names, result="")
 
+@app.route("/predict", methods=['POST'])
+def predict():
+    f_text = request.form['text']
+    if f_text == "":
+        return jsonify({'result': "", 'text': "", 'model': ""})
+    
+    f_text = Preprocess(f_text).preprocess()
+    f_text = f_text['text'][0]
+    
+    f_model_name = request.form['model']
+    model = models_dict[f_model_name]
+    prediction = model.predict([f_text])
+    f_result = dialects[prediction[0]]
+
+    return jsonify({'result': f_result, 'text': f_text, 'model': f_model_name})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

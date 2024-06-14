@@ -20,7 +20,7 @@
       <h1>Step 1: Choosing the model</h1>
       <div class="row">
         <div class="col-md-6" style="margin: 0 auto;">
-          <form action="/" method="post">
+          <form id="predict-form">
             <select class="form-control" id="model" name="model">
               {% for model in model_names %}
                 <option value="{{ model }}">{{ model }}</option>
@@ -33,7 +33,7 @@
       <div class="row">
         <div class="col-md-6">
           <h1>Enter a text</h1>
-          <textarea class="form-control" id="text" name="text" rows="3"> {{ text }} </textarea>
+          <textarea class="form-control" id="text" name="text" rows="3">{{ text }}</textarea>
           <br>
           <button type="submit" class="btn btn-primary" id="submit">Submit</button>
           </form>
@@ -44,7 +44,28 @@
         </div>
       </div>
     </div>
+
+    <!-- jQuery and AJAX script -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#predict-form').on('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+                
+                $.ajax({
+                    url: '/predict',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        // Update the result textarea with the response data
+                        $('#result').val(response.result);
+                    }
+                });
+            });
+        });
+    </script>
   </body>
+
   <style>
       body {
         background-color: #212121;
