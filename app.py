@@ -12,13 +12,16 @@ import os
 import joblib
 # TODO:: Add models here and add them to the models dictionary
 
-model_logistic = MLModel.load_model('./models/logistic_regression_model.pkl')
-dl_model= joblib.load('./models/dl_model.pkl')
-# model_dl = NLPModel.load_model('./models/dl_model.pkl')
+model_logistic = MLModel.load_model('./models/lg_model.pkl')
+model_obj = NLPModel.load_model(
+    './models/dl_model.keras', './models/tokenizer.pkl', './models/label_encoder.pkl')
+model_dl = model_obj.model
+tokenizer = model_obj.tokenizer
+
 
 models_dict = {
     "Logistic Regression": model_logistic,
-    "Deep Learning": dl_model
+    "Deep Learning": model_obj
 }
 
 dialects = {
@@ -40,11 +43,17 @@ def home():
         f_text = request.form['text']
         if f_text == "":
             return render_template("home.html", model_names=f_model_names, result="")
-        model = request.form['model']
-        model = models_dict[model]
+        f_text = Preprocess(f_text).preprocess()
+        print(f_text)
+        f_text = f_text['text'][0]
+        print(f_text)
+
+        f_model_name = request.form['model']
+        model = models_dict[f_model_name]
         prediction = model.predict([f_text])
         f_result = dialects[prediction[0]]
-        return render_template("home.html", model_names=f_model_names, result=f_result, text=f_text)
+        # update only the result in the page
+        return render_template("home.html", model_names=f_model_names, result=f_result, text=f_text, model=f_model_name)
 
     return render_template("home.html", model_names=f_model_names, result="")
 
