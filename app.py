@@ -9,14 +9,16 @@ from scripts.ml_model import MLModel
 from scripts.dl_model import NLPModel
 import os
 
-
+import joblib
 # TODO:: Add models here and add them to the models dictionary
 
 model_logistic = MLModel.load_model('./models/logistic_regression_model.pkl')
+dl_model= joblib.load('./models/dl_model.pkl')
 # model_dl = NLPModel.load_model('./models/dl_model.pkl')
 
 models_dict = {
-    "Logistic Regression": model_logistic
+    "Logistic Regression": model_logistic,
+    "Deep Learning": dl_model
 }
 
 dialects = {
