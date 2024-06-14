@@ -1,7 +1,7 @@
 from keras_preprocessing.text import Tokenizer
 import pandas as pd
 import pickle
-
+from data_preprocessing import Preprocess
 
 
 def save_tokenizer(tokenizer, filename):
@@ -11,8 +11,10 @@ def save_tokenizer(tokenizer, filename):
 
 if __name__ == '__main__':
     data = pd.read_csv('../data/dialects_data.csv')
-    X = data['text']
+    preprocess= Preprocess(data)
+    cleaned_data = preprocess.preprocess()
+    x=cleaned_data['text']
     tokenizer = Tokenizer(num_words=20000)
-    tokenizer.fit_on_texts(X)
+    tokenizer.fit_on_texts(x)
     save_tokenizer(tokenizer, '../models/tokenizer.pkl')
     print("Done....")
