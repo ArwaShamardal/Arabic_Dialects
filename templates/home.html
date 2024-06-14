@@ -19,12 +19,13 @@
     <div class="main-container">
       <h1>Step 1: Choosing the model</h1>
       <div class="row">
-        <div class="col-md-6", style="margin: 0 auto;">
-          <select class="form-control" id="model">
-            {% for model in models %}
-              <option value="{{ model }}">{{ model }}</option>
-            {% endfor %}
-          </select>
+        <div class="col-md-6" style="margin: 0 auto;">
+          <form action="/" method="post">
+            <select class="form-control" id="model" name="model">
+              {% for model in model_names %}
+                <option value="{{ model }}">{{ model }}</option>
+              {% endfor %}
+            </select>
         </div>
       </div>
       <h1>Step 2: Type Away</h1>
@@ -32,31 +33,27 @@
       <div class="row">
         <div class="col-md-6">
           <h1>Enter a text</h1>
-          <textarea class="form-control" id="text" rows="3"></textarea>
+          <textarea class="form-control" id="text" name="text" rows="3"> {{ text }} </textarea>
           <br>
-          <button class="btn btn-primary" id="submit">Submit</button>
+          <button type="submit" class="btn btn-primary" id="submit">Submit</button>
+          </form>
         </div>
         <div class="col-md-6">
           <h1>Dialect Result</h1>
-          <textarea class="form-control" id="result" rows="3" readonly></textarea>
+          <textarea class="form-control" id="result" rows="3" readonly>{{ result }}</textarea>
         </div>
       </div>
-
     </div>
-
-
   </body>
   <style>
       body {
         background-color: #212121;
-        color: white
+        color: white;
       }
       
       .row {
         margin: 5% auto;
         width: 60%;
       }
-
-      
   </style>
 </html>

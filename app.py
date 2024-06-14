@@ -6,26 +6,45 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.linear_model import LogisticRegression
 from scripts.ml_model import MLModel
-# from scripts.dl_model import NLPModel
+from scripts.dl_model import NLPModel
 import os
 
 
-# model_ml = MLModel.load_model('./models/logistic_regression_model.pkl')
+# TODO:: Add models here and add them to the models dictionary
+
+model_logistic = MLModel.load_model('./models/logistic_regression_model.pkl')
 # model_dl = NLPModel.load_model('./models/dl_model.pkl')
+
+models_dict = {
+    "Logistic Regression": model_logistic
+}
+
+dialects = {
+    "EG": "Egyptian Arabic",
+    "LY": "Libyan Arabic",
+    "LB": "Lebanese Arabic",
+    "SD": "Sudanese Arabic",
+    "MA": "Moroccan Arabic"
+}
 
 
 app = Flask(__name__)
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def home():
-    model_names = []
-    for file in os.listdir('./models'):
-        if file.endswith('.pkl'):
-            name = file.split('.')[0]
-            model_names.append(name)
+    f_model_names = list(models_dict.keys())
+    if request.method == 'POST':
+        f_text = request.form['text']
+        if f_text == "":
+            return render_template("home.html", model_names=f_model_names, result="")
+        model = request.form['model']
+        model = models_dict[model]
+        prediction = model.predict([f_text])
+        f_result = dialects[prediction[0]]
+        return render_template("home.html", model_names=f_model_names, result=f_result, text=f_text)
 
-    return render_template("home.html", models=model_names)
+    return render_template("home.html", model_names=f_model_names, result="")
 
 
 if __name__ == '__main__':
