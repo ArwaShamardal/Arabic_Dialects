@@ -60,14 +60,17 @@ def predict():
     if f_model_name == "Logistic Regression":
         prediction_prob = f_model.model.predict_proba(
             f_model.vectorizer.transform([f_text]))
+        # class_indices = f_model.get_class_indices()
     else:
         X_test_pad = f_model.tokenize([f_text])
         prediction_prob = f_model.model.predict(X_test_pad)
+        # class_indices = f_model.label_encoder.classes_
 
     prediction_prob = prediction_prob[0].tolist()
     for i in range(len(prediction_prob)):
-        prediction_prob[i] = int(prediction_prob[i]*100)
+        prediction_prob[i] = prediction_prob[i]*100
     print(prediction_prob)
+    # print(class_indices)
 
     f_result = dialects[prediction[0]]
 

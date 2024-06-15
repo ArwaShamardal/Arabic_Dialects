@@ -23,6 +23,13 @@ class MLModel:
         print(f"F1 Score: {f1_score(y_test, y_pred, average='weighted'):.2f}")
         print(classification_report(y_test, y_pred))
 
+    def get_class_indices(self):
+        if self.model:
+            return {index: class_name for index, class_name in enumerate(self.model.classes_)}
+        else:
+            print("Model is not defined.")
+            return None
+
     def save_model(self, path):
         dir_name = os.path.dirname(path)
         if not os.path.exists(dir_name):
