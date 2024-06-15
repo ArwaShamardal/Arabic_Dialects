@@ -49,10 +49,9 @@ def home():
         print(f_text)
 
         f_model_name = request.form['model']
-        model = models_dict[f_model_name]
-        prediction = model.predict([f_text])
+        f_model = models_dict[f_model_name]
+        prediction = f_model.predict([f_text])
         f_result = dialects[prediction[0]]
-        # update only the result in the page
         return render_template("home.html", model_names=f_model_names, result=f_result, text=f_text, model=f_model_name)
 
     return render_template("home.html", model_names=f_model_names, result="")
