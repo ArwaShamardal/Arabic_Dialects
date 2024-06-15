@@ -54,9 +54,12 @@ class NLPModel:
         self.model.fit(X_train_pad, y_train_cat, epochs=epochs, batch_size=batch_size,
                        validation_data=validation_data, class_weight=class_weights)
 
+    def tokenize(self, X):
+        X_seq = self.tokenizer.texts_to_sequences(X)
+        return pad_sequences(X_seq, maxlen=self.max_sequence_length)
+
     def predict(self, X_test):
-        X_test_seq = self.tokenizer.texts_to_sequences(X_test)
-        X_test_pad = pad_sequences(X_test_seq, maxlen=self.max_sequence_length)
+        X_test_pad = self.tokenize(X_test)
         y_pred_prob = self.model.predict(X_test_pad)
         y_pred_int = np.argmax(y_pred_prob, axis=1)
         return self.label_encoder.inverse_transform(y_pred_int)
