@@ -8,7 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from scripts.ml_model import MLModel
 from scripts.dl_model import NLPModel
 import os
-
+from gensim.models import KeyedVectors
 import joblib
 # TODO:: Add models here and add them to the models dictionary
 
@@ -18,6 +18,11 @@ model_obj = NLPModel.load_model(
 model_dl = model_obj.model
 tokenizer = model_obj.tokenizer
 
+sgd=joblib.load('./models/sgd_model.pkl')
+def load_embedding_model(path):
+    return KeyedVectors.load_word2vec_format(path, binary=False)
+
+w2v_model = load_embedding_model('./models/ft_model.vec')
 
 models_dict = {
     "Logistic Regression": model_logistic,
