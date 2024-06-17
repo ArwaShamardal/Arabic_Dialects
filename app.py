@@ -52,6 +52,8 @@ def predict():
 
     f_text = Preprocess(f_text).preprocess()
     f_text = f_text['text'][0]
+    if f_text == "":
+        return jsonify({'result': "", 'text': "", 'model': ""})
 
     f_model_name = request.form['model']
     f_model = models_dict[f_model_name]
