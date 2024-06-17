@@ -5,7 +5,6 @@ import pandas as pd
 
 class Preprocess():
     def __init__(self, df):
-        # is data is of type string make it a dataframe
         if isinstance(df, str):
             df = pd.DataFrame([df], columns=['text'])
         self.df = df
